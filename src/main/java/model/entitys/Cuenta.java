@@ -2,7 +2,7 @@ package model.entitys;
 
 import java.io.Serializable;
 
-public class Cuenta implements Serializable{
+public abstract class Cuenta implements Serializable{
 
 	/**
 	 * 

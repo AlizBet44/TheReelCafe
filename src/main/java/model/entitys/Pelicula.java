@@ -3,17 +3,45 @@ package model.entitys;
 import java.io.Serializable;
 import java.util.Date;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+
+@Entity
+@Table(name = "pelicula")
 public class Pelicula implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @Column(name = "titulo", nullable = false, length = 255)
     private String titulo;
+
+    @Column(name = "poster", length = 255)
     private String poster;
+
+    @Column(name = "sinopsis", columnDefinition = "TEXT")
     private String sinopsis;
+
+    @Column(name = "director", length = 255)
     private String director;
+
+    @Column(name = "trailer", length = 255)
     private String trailer;
+
+    @Column(name = "duracion")
     private int duracion;
+
+    @Temporal(TemporalType.DATE)
+    @Column(name = "fecha_estreno")
     private Date fechaEstreno;
 
     public Pelicula() {
