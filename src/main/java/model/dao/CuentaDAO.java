@@ -14,4 +14,16 @@ public class CuentaDAO {
 	public void actualizarRol(int idUsuario, int idRol) {
 		
 	}
+	public Cuenta obtenerPorId(int idUsuario) {
+		return null;
+	}
+	public void eliminarCuenta(int idUsuario) {
+		
+	}
+	public void desactivarCuenta(int idUsuario) {
+		
+	}
+	public void activarCuenta(int idUsuario) {
+		
+	}
 }

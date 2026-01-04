@@ -18,9 +18,9 @@ public class PeliculaDAO {
         return false;
     }
 
-    public boolean registrarPelicula(Pelicula pelicula) {
-        // Lógica para registrar/insertar una nueva película
-        return false;
+    public void registrarPelicula(Pelicula pelicula) {
+        // Lóica para registrar/insertar una nueva película
+
     }
 
     public Pelicula obtenerDatosPelicula(int id) {
