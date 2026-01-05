@@ -14,14 +14,21 @@
     <link rel="icon" type="image/png"
           href="${pageContext.request.contextPath}/recursos/icons/et.png"
           sizes="32x32">
-
+    
     <script>
-        function confirmarEliminar(url) {
-            if (confirm('¿Eliminar este registro?')) {
-                window.location.href = url;
+        function confirmarEliminar(idUsuario) {
+            if (confirm('¿Estás seguro que deseas eliminar esta cuenta?\n\nEsta acción no se puede deshacer.')) {
+                window.location.href = '${pageContext.request.contextPath}/GestionarCuentasController?action=confirmar&decision=true&accion=eliminar&idUsuario=' + idUsuario;
+            }
+        }
+        
+        function confirmarDesactivar(idUsuario) {
+            if (confirm('¿Estás seguro de desactivar esta cuenta?\n\nEl usuario no podrá iniciar sesión hasta que reactives su cuenta.')) {
+                window.location.href = '${pageContext.request.contextPath}/GestionarCuentasController?action=confirmar&decision=true&accion=desactivar&idUsuario=' + idUsuario;
             }
         }
     </script>
+
 </head>
 
 <body>
@@ -83,22 +90,49 @@
 
                         <div class="table-actions">
 
-                            <a href="${pageContext.request.contextPath}/${editarUrl}?action=cambiar&idUsuario=${fila.id}"
-                               class="btn-action">
+                            <!-- Botón Cambiar Rol -->
+                            <a href="${pageContext.request.contextPath}/GestionarCuentasController?action=cambiar&idUsuario=${fila.id}"
+                               class="btn-action"
+                               title="Cambiar Rol">
                                 <img src="${pageContext.request.contextPath}/recursos/icons/cambiar.png"
-                                     alt="Editar">
+                                     alt="Cambiar Rol">
                             </a>
 
+                            <!-- Botón Eliminar con confirmación -->
                             <button class="btn-action"
-                                    onclick="confirmarEliminar('${pageContext.request.contextPath}/${eliminarUrl}?action=eliminar&idUsuario=${fila.id}')">
+                                    onclick="confirmarEliminar(${fila.id})"
+                                    title="Eliminar Cuenta"
+                                    style="border: none; background: none; cursor: pointer;">
                                 <img src="${pageContext.request.contextPath}/recursos/icons/tachito.png"
                                      alt="Eliminar">
                             </button>
 
-                            <a href="${pageContext.request.contextPath}/${toggleUrl}?action=desactivar&idUsuario=${fila.id}"
-                               class="btn-admin btn-activate">
-                                ${fila.estadoTexto}
-                            </a>
+                            <!-- Botón Activar/Desactivar - Solo para Usuarios -->
+                            <c:choose>
+                                <c:when test="${fila.rol == 'Usuario'}">
+                                    <c:choose>
+                                        <c:when test="${fila.estadoTexto == 'Activo'}">
+                                            <button onclick="confirmarDesactivar(${fila.id})"
+                                                    class="btn-admin btn-activate"
+                                                    style="background-color: #f39c12; border: none; cursor: pointer;"
+                                                    title="Desactivar Cuenta">
+                                                Desactivar
+                                            </button>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <a href="${pageContext.request.contextPath}/GestionarCuentasController?action=activar&idUsuario=${fila.id}"
+                                               class="btn-admin btn-activate"
+                                               style="background-color: #27ae60;"
+                                               title="Activar Cuenta">
+                                                Activar
+                                            </a>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </c:when>
+                                <c:otherwise>
+                                    <span class="btn-admin" style="background-color: #95a5a6; cursor: not-allowed;">N/A</span>
+                                </c:otherwise>
+                            </c:choose>
 
                         </div>
                     </div>
