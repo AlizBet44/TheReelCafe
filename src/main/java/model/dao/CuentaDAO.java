@@ -5,8 +5,8 @@ import java.util.List;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
-import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
+import model.entitys.Administrador;
 import model.entitys.Cuenta;
 import model.entitys.Usuario;
 
@@ -107,48 +107,64 @@ public class CuentaDAO {
 		em.getTransaction().begin();
 		try {
 			// Obtener la cuenta actual
-			Cuenta cuentaActual = em.find(Cuenta.class, idUsuario);
+			Cuenta cuentaVieja = em.find(Cuenta.class, idUsuario);
 			
-			if (cuentaActual == null) {
+			if (cuentaVieja == null) {
 				System.out.println(">>>> ERROR: Cuenta no encontrada");
 				em.getTransaction().rollback();
 				return;
 			}
 			
-			// Determinar el tipo actual y el nuevo tipo
-			String tipoActual = cuentaActual instanceof Usuario ? "Usuario" : "Administrador";
-			String tipoNuevo = (idRol == 1) ? "Administrador" : "Usuario";
+			// Verificar si ya tiene el rol correcto
+			boolean esAdmin = cuentaVieja instanceof Administrador;
+			boolean quiereSerAdmin = (idRol == 1);
 			
-			// Si ya tiene el rol correcto, no hacer nada
-			if (tipoActual.equals(tipoNuevo)) {
-				System.out.println(">>>> INFO: La cuenta ya tiene el rol " + tipoNuevo);
+			if (esAdmin == quiereSerAdmin) {
+				System.out.println(">>>> INFO: La cuenta ya tiene el rol correcto");
 				em.getTransaction().commit();
 				return;
 			}
 			
-			// Usar consulta nativa para actualizar el campo DTYPE (discriminador)
-			// idRol = 1 -> Administrador
-			// idRol = 2 -> Usuario
-			String nuevoTipo = (idRol == 1) ? "Administrador" : "Usuario";
+			// Guardar datos comunes
+			String nombre = cuentaVieja.getNombre();
+			String correo = cuentaVieja.getCorreo();
+			String cedula = null;
+			Boolean estado = null;
 			
-			Query query = em.createNativeQuery(
-				"UPDATE Cuenta SET DTYPE = :tipo WHERE id = :id"
-			);
-			query.setParameter("tipo", nuevoTipo);
-			query.setParameter("id", idUsuario);
-			
-			int filasActualizadas = query.executeUpdate();
-			
-			if (filasActualizadas > 0) {
-				em.getTransaction().commit();
-				System.out.println(">>>> Rol actualizado exitosamente a " + nuevoTipo);
-			} else {
-				em.getTransaction().rollback();
-				System.out.println(">>>> ERROR: No se pudo actualizar el rol");
+			// Si es Usuario, guardar cedula y estado
+			if (cuentaVieja instanceof Usuario) {
+				Usuario usuarioViejo = (Usuario) cuentaVieja;
+				cedula = usuarioViejo.getCedula();
+				estado = usuarioViejo.getEstado();
 			}
+			
+			// Eliminar cuenta vieja
+			em.remove(cuentaVieja);
+			em.flush(); // Forzar eliminación
+			
+			// Crear nueva cuenta con el rol correcto
+			Cuenta cuentaNueva;
+			if (idRol == 1) {
+				// Crear Administrador
+				cuentaNueva = new Administrador(nombre, correo);
+			} else {
+				// Crear Usuario
+				Usuario usuarioNuevo = new Usuario(nombre, correo, cedula != null ? cedula : "");
+				if (estado != null) {
+					usuarioNuevo.setEstado(estado);
+				}
+				cuentaNueva = usuarioNuevo;
+			}
+			
+			// Persistir nueva cuenta
+			em.persist(cuentaNueva);
+			em.getTransaction().commit();
+			
+			System.out.println(">>>> Rol actualizado exitosamente");
 			
 		} catch (Exception e) {
 			System.out.println(">>>> ERROR: Actualización de rol - " + e.getMessage());
+			e.printStackTrace();
 			if (em.getTransaction().isActive()) {
 				em.getTransaction().rollback();
 			}

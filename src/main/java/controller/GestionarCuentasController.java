@@ -1,20 +1,20 @@
 package controller;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.dao.CuentaDAO;
+import model.entitys.Administrador;
 import model.entitys.Cuenta;
 import model.entitys.Usuario;
-import model.entitys.Administrador;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Servlet implementation class GestionarCuentasController
@@ -114,7 +114,11 @@ public class GestionarCuentasController extends HttpServlet {
 		CuentaDAO dao = new CuentaDAO();
 		Cuenta cuenta = dao.obtenerPorId(idUsuario);
 		
+		// Determinar el rol actual
+		boolean esAdmin = cuenta instanceof Administrador;
+		
 		request.setAttribute("cuenta", cuenta);
+		request.setAttribute("esAdmin", esAdmin);
 		request.getRequestDispatcher("/vistas/CambiarRol.jsp").forward(request, response);
 	}
 	
