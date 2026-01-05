@@ -17,7 +17,7 @@ public class EntityManagerTest {
 		System.out.println("Hola mundo");
 		EntityManagerFactory emf = Persistence.createEntityManagerFactory("The_ReelCafe");
 		EntityManager em = emf.createEntityManager();
-		/*
+		
 		//Crear película
 		Pelicula pelicula = new Pelicula("Inception", "inception.jpg", "A mind-bending thriller", "Christopher Nolan", "inception_trailer.mp4", 148, new java.util.Date());
 		
@@ -39,8 +39,7 @@ public class EntityManagerTest {
 		for (Pelicula pelicula2 : peliculas) {
 			System.out.println(pelicula2);
 		}
-		*/
-		
+				
 		Administrador admin = new Administrador("Juan", "aaaa", "aaa");
 		Usuario user = new Usuario("pepe", "ssss", "22");
 		
