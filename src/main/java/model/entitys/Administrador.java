@@ -1,37 +1,45 @@
 package model.entitys;
 
-import jakarta.persistence.*;
+import java.util.Objects;
+
+import jakarta.persistence.Entity;
 
 @Entity
 public class Administrador extends Cuenta {
-    private static final long serialVersionUID = 1L; // keep serialization stable
+    private static final long serialVersionUID = 1L;
 
-    // Example additional property for an administrator bean
-    @Column(name = "clave")
-    private String clave;
-
-    // No-arg constructor required for JavaBeans
+    // Constructor público sin parámetros (requerido para JavaBeans)
     public Administrador() {
         super();
     }
 
-    // Convenience constructor
-    public Administrador(String nombre, String correo, String clave) {
-        this.clave = clave;
+    // Constructor con parámetros
+    public Administrador(String nombre, String correo) {
+        super(nombre, correo);
     }
 
-    // Getter and setter follow JavaBean conventions
-    public String getClave() {
-        return clave;
-    }
-
-    public void setClave(String clave) {
-        this.clave = clave;
-    }
+    // Getter y setter
 
     @Override
     public String toString() {
-        // Avoid printing the raw password/clave
-        return "Administrador [id=" + getId() + ", nombre=" + getNombre() + ", correo=" + getCorreo() + ", clave=****]";
+        // Evita imprimir la contraseña/clave sin encriptar
+        return "Administrador [id=" + getId() + ", nombre=" + getNombre() + ", correo=" + getCorreo() + "]";
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (other == null || getClass() != other.getClass()) {
+            return false;
+        }
+        Administrador admin = (Administrador) other;
+        return Objects.equals(getId(), admin.getId());
     }
 }

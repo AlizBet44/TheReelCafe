@@ -1,44 +1,101 @@
 package model.dao;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
-import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 import model.entitys.Pelicula;
 
 public class PeliculaDAO {
+	
+	private final EntityManager em;
+	private final EntityManagerFactory emf;
+	
+	public PeliculaDAO() {
+		this.emf = Persistence.createEntityManagerFactory("The_ReelCafe");
+		this.em = emf.createEntityManager();
+	}
 
-    public List<Pelicula> obtenerTodas() {
-    	EntityManagerFactory emf = Persistence.createEntityManagerFactory("The_ReelCafe");
-		EntityManager em = emf.createEntityManager();
-		
-		String consulta = "SELECT p FROM Pelicula p";
-		Query query = em.createQuery(consulta);
-		List<Pelicula> peliculas = (List<Pelicula>)query.getResultList();
-		return peliculas;
-    }
+	public List<Pelicula> obtenerTodas() {
+		try {
+			TypedQuery<Pelicula> query = em.createQuery("SELECT p FROM Pelicula p", Pelicula.class);
+			return query.getResultList();
+		} catch (Exception e) {
+			System.out.println(">>>> ERROR: Obtener todas las películas - " + e.getMessage());
+			return null;
+		}
+	}
 
-    public boolean eliminarPelicula(int id) {
-        // Lógica para eliminar una película por id
-        // Retornar true si se eliminó correctamente
-        return false;
-    }
+	public boolean eliminarPelicula(int id) {
+		em.getTransaction().begin();
+		try {
+			Pelicula pelicula = em.find(Pelicula.class, id);
+			if (pelicula != null) {
+				em.remove(pelicula);
+				em.getTransaction().commit();
+				System.out.println(">>>> Película eliminada exitosamente");
+				return true;
+			} else {
+				System.out.println(">>>> ERROR: Película no encontrada");
+				em.getTransaction().rollback();
+				return false;
+			}
+		} catch (Exception e) {
+			System.out.println(">>>> ERROR: Eliminación de película - " + e.getMessage());
+			if (em.getTransaction().isActive()) {
+				em.getTransaction().rollback();
+			}
+			return false;
+		}
+	}
 
-    public void registrarPelicula(Pelicula pelicula) {
-        // Lóica para registrar/insertar una nueva película
+	public void registrarPelicula(Pelicula pelicula) {
+		em.getTransaction().begin();
+		try {
+			em.persist(pelicula);
+			em.getTransaction().commit();
+			System.out.println(">>>> Película registrada exitosamente");
+		} catch (Exception e) {
+			System.out.println(">>>> ERROR: Registro de película - " + e.getMessage());
+			if (em.getTransaction().isActive()) {
+				em.getTransaction().rollback();
+			}
+		}
+	}
 
-    }
+	public Pelicula obtenerDatosPelicula(int id) {
+		try {
+			return em.find(Pelicula.class, id);
+		} catch (Exception e) {
+			System.out.println(">>>> ERROR: Obtener película por ID - " + e.getMessage());
+			return null;
+		}
+	}
 
-    public Pelicula obtenerDatosPelicula(int id) {
-        // Obtener datos de una película por id
-        return null;
-    }
-
-    public boolean actualizar(Pelicula pelicula) {
-        // Actualizar los datos de la película
-        return false;
-    }
+	public boolean actualizar(Pelicula pelicula) {
+		em.getTransaction().begin();
+		try {
+			em.merge(pelicula);
+			em.getTransaction().commit();
+			System.out.println(">>>> Película actualizada exitosamente");
+			return true;
+		} catch (Exception e) {
+			System.out.println(">>>> ERROR: Actualización de película - " + e.getMessage());
+			if (em.getTransaction().isActive()) {
+				em.getTransaction().rollback();
+			}
+			return false;
+		}
+	}
+	
+	public void cerrar() {
+		if (em != null && em.isOpen()) {
+			em.close();
+		}
+		if (emf != null && emf.isOpen()) {
+			emf.close();
+		}
+	}
 }
