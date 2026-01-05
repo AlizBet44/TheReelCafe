@@ -92,15 +92,13 @@
 
                         <!-- ACCIONES -->
                         <div class="d-flex gap">
-                            <a href="${pageContext.request.contextPath}/GestionarPeliculas?action=publicar&id=${p.id}"
-                               class="btn-admin btn-new">Publicar</a>
 
-                            <a href="${pageContext.request.contextPath}/GestionarPeliculas?action=llenar&id=${p.id}"
+                            <a href="${pageContext.request.contextPath}/GestionarPeliculas?action=editar&idPelicula=${p.id}"
                                class="btn-admin btn-edit">Editar</a>
 
                             <a href="#"
                                class="btn-admin btn-back"
-                               onclick="confirmarEliminar('${pageContext.request.contextPath}/GestionarPeliculas?action=eliminar&id=${p.id}');return false;">
+                               onclick="confirmarEliminar('${pageContext.request.contextPath}/GestionarPeliculas?action=eliminar&idPelicula=${p.id}');return false;">
                                Eliminar
                             </a>
                         </div>
@@ -112,7 +110,7 @@
         </div>
 
         <div class="admin-buttons">
-            <a href="${pageContext.request.contextPath}/vistas/PublicarPelicula.jsp"
+            <a href="${pageContext.request.contextPath}/GestionarPeliculas?action=publicar"
                class="btn-admin btn-new">Publicar nueva</a>
 
             <a href="${pageContext.request.contextPath}/index.html"
