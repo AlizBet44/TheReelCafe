@@ -140,7 +140,7 @@
                         Publicar
                     </button>
 
-                    <a href="${pageContext.request.contextPath}/admin/admin_movies.jsp"
+                    <a href="${pageContext.request.contextPath}/GestionarPeliculas?action=listar"
                        class="btn-form btn-cancel">
                         Cancelar
                     </a>
