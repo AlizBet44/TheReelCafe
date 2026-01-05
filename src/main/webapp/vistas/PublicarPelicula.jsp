@@ -62,8 +62,7 @@
         <!-- EL CONTROLADOR DEFINE action y method -->
         <form class="movie-form"
               action="${pageContext.request.contextPath}/GestionarPeliculas"
-              method="post"
-              enctype="multipart/form-data">
+              method="post">
 
             <!-- COLUMNA IZQUIERDA -->
             <div class="form-left">
@@ -75,10 +74,10 @@
                          alt="Upload"
                          class="upload-icon">
 
-                    <input type="file"
+                    <input type="text"
                            name="poster"
-                           accept="image/*"
-                           class="file-input">
+                           class="form-input"
+                           placeholder="URL del poster">
                 </div>
             </div>
 
@@ -126,14 +125,14 @@
                 <div class="form-group form-full">
                     <label class="form-label">Trailer URL</label>
                     <input type="url"
-                           name="trailer"
+                           name="urlTrailer"
                            class="form-input"
                            placeholder="Ingresa la url del trailer"
                            required>
                 </div>
 
                 <!-- EL CONTROLADOR IDENTIFICA LA ACCIÓN -->
-                <input type="hidden" name="action" value="publicar">
+                <input type="hidden" name="action" value="llenar">
 
                 <div class="form-actions">
                     <button type="submit" class="btn-form btn-save">
