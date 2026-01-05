@@ -7,14 +7,19 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.dao.CuentaDAO;
 import model.entitys.Cuenta;
+import model.entitys.Usuario;
+import model.entitys.Administrador;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Servlet implementation class GestionarCuentasController
  */
-@WebServlet(name = "GestionarCuentasController", urlPatterns = {"/GestionarCuentasController"})
+@WebServlet(name = "GestionarCuentasController", urlPatterns = {"/GestionarCuentasController", "/cuentas"})
 public class GestionarCuentasController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -22,20 +27,22 @@ public class GestionarCuentasController extends HttpServlet {
         
     }
 
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		ruteador(request, response);
+		processRequest(request, response);
 	}
 
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		ruteador(request, response);
+		processRequest(request, response);
 	}
 	
-	public void ruteador(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// Usar exclusivamente el parámetro "action" (no "ruta"). Si no viene, por defecto "listar".
+	private void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String action = request.getParameter("action");
 		if (action == null || action.isEmpty()) {
 			action = "listar";
 		}
+		
 		switch (action) {
 		case "listar":
 			listar(request, response);
@@ -64,63 +71,87 @@ public class GestionarCuentasController extends HttpServlet {
 		}
 	}
 
-	public void listar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("Listar");
+	protected void listar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		CuentaDAO dao = new CuentaDAO();
 		List<Cuenta> listaCuentas = dao.obtenerTodas();
 		
-		request.setAttribute("cuentas", listaCuentas);
-		request.getRequestDispatcher("vistas/AdministrarCuentas.jsp").forward(request, response);
+		// Convertir a formato que la JSP puede mostrar
+		List<Map<String, Object>> lista = new ArrayList<>();
+		for (Cuenta cuenta : listaCuentas) {
+			Map<String, Object> fila = new HashMap<>();
+			fila.put("id", cuenta.getId());
+			fila.put("nombre", cuenta.getNombre());
+			fila.put("correo", cuenta.getCorreo());
+			
+			// Determinar el rol según el tipo de clase
+			if (cuenta instanceof Administrador) {
+				fila.put("rol", "Administrador");
+				fila.put("estadoTexto", "N/A");
+			} else if (cuenta instanceof Usuario) {
+				Usuario usuario = (Usuario) cuenta;
+				fila.put("rol", "Usuario");
+				Boolean estado = usuario.getEstado();
+				fila.put("estadoTexto", (estado != null && estado) ? "Activo" : "Inactivo");
+			} else {
+				fila.put("rol", "Desconocido");
+				fila.put("estadoTexto", "N/A");
+			}
+			
+			lista.add(fila);
+		}
 		
+		request.setAttribute("lista", lista);
+		request.setAttribute("editarUrl", "GestionarCuentasController");
+		request.setAttribute("eliminarUrl", "GestionarCuentasController");
+		request.setAttribute("toggleUrl", "GestionarCuentasController");
+		
+		request.getRequestDispatcher("vistas/AdministrarCuentas.jsp").forward(request, response);
 	}
 	
-	//public void cambiarRol(int idUsuario) {
-	public void cambiarRol(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void cambiarRol(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Integer idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
 		
 		CuentaDAO dao = new CuentaDAO();
 		Cuenta cuenta = dao.obtenerPorId(idUsuario);
 		
 		request.setAttribute("cuenta", cuenta);
-		request.getRequestDispatcher("vistas/CambiarRol.jsp").forward(request, response);
+		request.getRequestDispatcher("/vistas/CambiarRol.jsp").forward(request, response);
 	}
 	
-	
-	
-	public void guardarRol(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void guardarRol(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Integer idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
 		Integer idRol = Integer.parseInt(request.getParameter("idRol"));
 		
 		CuentaDAO dao = new CuentaDAO();
 		dao.actualizarRol(idUsuario, idRol);
 		
-		response.sendRedirect("cuentas?action=listar");
+		response.sendRedirect(request.getContextPath() + "/GestionarCuentasController?action=listar");
 	}
 	
-	public void eliminarCuenta(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void eliminarCuenta(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Integer idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
 		
 		request.setAttribute("idUsuario", idUsuario);
-		request.getRequestDispatcher("vistas/EliminarCuenta.jsp").forward(request, response);
+		request.getRequestDispatcher("/vistas/EliminarCuenta.jsp").forward(request, response);
 	}	
 	
-	public void desactivarCuenta(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void desactivarCuenta(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Integer idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
 		
 		request.setAttribute("idUsuario", idUsuario);
-		request.getRequestDispatcher("vistas/DesactivarCuenta.jsp").forward(request, response);
+		request.getRequestDispatcher("/vistas/DesactivarCuenta.jsp").forward(request, response);
 	}
 	
-	public void activarCuenta(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void activarCuenta(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Integer idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
 		
 		CuentaDAO dao = new CuentaDAO();
 		dao.activarCuenta(idUsuario);
 		
-		response.sendRedirect("cuentas?action=listar");
+		response.sendRedirect(request.getContextPath() + "/GestionarCuentasController?action=listar");
 	}
 	
-	public void confirmarAccion(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void confirmarAccion(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		boolean decision = Boolean.parseBoolean(request.getParameter("decision"));
 		String accion = request.getParameter("accion");
 		Integer idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
@@ -138,7 +169,6 @@ public class GestionarCuentasController extends HttpServlet {
 			}
 		}
 		
-		response.sendRedirect("cuentas?action=listar");
+		response.sendRedirect(request.getContextPath() + "/GestionarCuentasController?action=listar");
 	}
-	
 }

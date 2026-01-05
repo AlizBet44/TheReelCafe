@@ -83,19 +83,19 @@
 
                         <div class="table-actions">
 
-                            <a href="${pageContext.request.contextPath}/${editarUrl}?id=${fila.id}"
+                            <a href="${pageContext.request.contextPath}/${editarUrl}?action=cambiar&idUsuario=${fila.id}"
                                class="btn-action">
                                 <img src="${pageContext.request.contextPath}/recursos/icons/cambiar.png"
                                      alt="Editar">
                             </a>
 
                             <button class="btn-action"
-                                    onclick="confirmarEliminar('${pageContext.request.contextPath}/${eliminarUrl}?id=${fila.id}')">
+                                    onclick="confirmarEliminar('${pageContext.request.contextPath}/${eliminarUrl}?action=eliminar&idUsuario=${fila.id}')">
                                 <img src="${pageContext.request.contextPath}/recursos/icons/tachito.png"
                                      alt="Eliminar">
                             </button>
 
-                            <a href="${pageContext.request.contextPath}/${toggleUrl}?id=${fila.id}"
+                            <a href="${pageContext.request.contextPath}/${toggleUrl}?action=desactivar&idUsuario=${fila.id}"
                                class="btn-admin btn-activate">
                                 ${fila.estadoTexto}
                             </a>
