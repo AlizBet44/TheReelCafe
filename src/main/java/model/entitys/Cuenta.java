@@ -2,21 +2,26 @@ package model.entitys;
 
 import java.io.Serializable;
 
-public abstract class Cuenta implements Serializable{
+import jakarta.persistence.*;
+@Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+public class Cuenta implements Serializable{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
+	@Column(name = "nombre")
 	private String nombre;
+	@Column(name = "correo")
 	private String correo;
 	public Cuenta() {
 		
 	}
-	public Cuenta(Integer id, String nombre, String correo) {
-		super();
-		this.id = id;
+	public Cuenta(String nombre, String correo) {
 		this.nombre = nombre;
 		this.correo = correo;
 	}

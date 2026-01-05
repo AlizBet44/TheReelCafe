@@ -47,9 +47,8 @@ public class Pelicula implements Serializable {
     public Pelicula() {
     }
 
-    public Pelicula(Integer id, String titulo, String poster, String sinopsis, String director, String trailer,
+    public Pelicula(String titulo, String poster, String sinopsis, String director, String trailer,
             int duracion, Date fechaEstreno) {
-        this.id = id;
         this.titulo = titulo;
         this.poster = poster;
         this.sinopsis = sinopsis;
@@ -122,4 +121,17 @@ public class Pelicula implements Serializable {
     public void setFechaEstreno(Date fechaEstreno) {
         this.fechaEstreno = fechaEstreno;
     }
+
+	@Override
+	public String toString() {
+		return "Pelicula [id=" + id + ", titulo=" + titulo + ", poster=" + poster + ", sinopsis=" + sinopsis
+				+ ", director=" + director + ", trailer=" + trailer + ", duracion=" + duracion + ", fechaEstreno="
+				+ fechaEstreno + ", getId()=" + getId() + ", getTitulo()=" + getTitulo() + ", getPoster()="
+				+ getPoster() + ", getSinopsis()=" + getSinopsis() + ", getDirector()=" + getDirector()
+				+ ", getTrailer()=" + getTrailer() + ", getDuracion()=" + getDuracion() + ", getFechaEstreno()="
+				+ getFechaEstreno() + ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + ", toString()="
+				+ super.toString() + "]";
+	}
+    
+    
 }

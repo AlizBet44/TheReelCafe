@@ -3,13 +3,22 @@ package model.dao;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.Query;
 import model.entitys.Pelicula;
 
 public class PeliculaDAO {
 
     public List<Pelicula> obtenerTodas() {
-        // En una implementación real, aquí se consultaría la base de datos
-        return new ArrayList<>();
+    	EntityManagerFactory emf = Persistence.createEntityManagerFactory("The_ReelCafe");
+		EntityManager em = emf.createEntityManager();
+		
+		String consulta = "SELECT p FROM Pelicula p";
+		Query query = em.createQuery(consulta);
+		List<Pelicula> peliculas = (List<Pelicula>)query.getResultList();
+		return peliculas;
     }
 
     public boolean eliminarPelicula(int id) {
