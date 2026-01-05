@@ -2,6 +2,7 @@ package model.entitys;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -126,12 +127,23 @@ public class Pelicula implements Serializable {
 	public String toString() {
 		return "Pelicula [id=" + id + ", titulo=" + titulo + ", poster=" + poster + ", sinopsis=" + sinopsis
 				+ ", director=" + director + ", trailer=" + trailer + ", duracion=" + duracion + ", fechaEstreno="
-				+ fechaEstreno + ", getId()=" + getId() + ", getTitulo()=" + getTitulo() + ", getPoster()="
-				+ getPoster() + ", getSinopsis()=" + getSinopsis() + ", getDirector()=" + getDirector()
-				+ ", getTrailer()=" + getTrailer() + ", getDuracion()=" + getDuracion() + ", getFechaEstreno()="
-				+ getFechaEstreno() + ", getClass()=" + getClass() + ", hashCode()=" + hashCode() + ", toString()="
-				+ super.toString() + "]";
+				+ fechaEstreno + "]";
 	}
-    
-    
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (this == other) {
+			return true;
+		}
+		if (other == null || getClass() != other.getClass()) {
+			return false;
+		}
+		Pelicula pelicula = (Pelicula) other;
+		return Objects.equals(id, pelicula.id);
+	}
 }
