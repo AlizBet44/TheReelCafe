@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Servlet implementation class GestionarCuentasController
  */
-@WebServlet("/cuentas")
+@WebServlet(name = "GestionarCuentasController", urlPatterns = {"/GestionarCuentasController"})
 public class GestionarCuentasController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -31,11 +31,12 @@ public class GestionarCuentasController extends HttpServlet {
 	}
 	
 	public void ruteador(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String ruta = request.getParameter("ruta");
-		if (ruta == null) {
-			ruta = "listar";
+		// Usar exclusivamente el parámetro "action" (no "ruta"). Si no viene, por defecto "listar".
+		String action = request.getParameter("action");
+		if (action == null || action.isEmpty()) {
+			action = "listar";
 		}
-		switch (ruta) {
+		switch (action) {
 		case "listar":
 			listar(request, response);
 			break;
@@ -62,7 +63,7 @@ public class GestionarCuentasController extends HttpServlet {
 			break;
 		}
 	}
-	
+
 	public void listar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		System.out.println("Listar");
 		CuentaDAO dao = new CuentaDAO();
@@ -93,7 +94,7 @@ public class GestionarCuentasController extends HttpServlet {
 		CuentaDAO dao = new CuentaDAO();
 		dao.actualizarRol(idUsuario, idRol);
 		
-		response.sendRedirect("cuentas?ruta=listar");
+		response.sendRedirect("cuentas?action=listar");
 	}
 	
 	public void eliminarCuenta(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -116,7 +117,7 @@ public class GestionarCuentasController extends HttpServlet {
 		CuentaDAO dao = new CuentaDAO();
 		dao.activarCuenta(idUsuario);
 		
-		response.sendRedirect("cuentas?ruta=listar");
+		response.sendRedirect("cuentas?action=listar");
 	}
 	
 	public void confirmarAccion(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -137,7 +138,7 @@ public class GestionarCuentasController extends HttpServlet {
 			}
 		}
 		
-		response.sendRedirect("cuentas?ruta=listar");
+		response.sendRedirect("cuentas?action=listar");
 	}
 	
 }
