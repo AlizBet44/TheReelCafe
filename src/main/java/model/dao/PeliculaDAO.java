@@ -89,6 +89,18 @@ public class PeliculaDAO {
 			return false;
 		}
 	}
+
+	public List<Pelicula> obtenerPelicula(String criterio) {
+		try {
+			String query = "SELECT p FROM Pelicula p WHERE LOWER(p.titulo) LIKE LOWER(:criterio) OR LOWER(p.director) LIKE LOWER(:criterio) OR LOWER(p.sinopsis) LIKE LOWER(:criterio)";
+			TypedQuery<Pelicula> typedQuery = em.createQuery(query, Pelicula.class);
+			typedQuery.setParameter("criterio", "%" + criterio + "%");
+			return typedQuery.getResultList();
+		} catch (Exception e) {
+			System.out.println(">>>> ERROR: Búsqueda de película - " + e.getMessage());
+			return null;
+		}
+	}
 	
 	public void cerrar() {
 		if (em != null && em.isOpen()) {
