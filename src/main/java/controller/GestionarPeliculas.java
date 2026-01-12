@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import model.dao.PeliculaDAO;
 import model.entitys.Pelicula;
 
-@WebServlet(name = "GestionarPeliculas", urlPatterns = {"/GestionarPeliculas"})
+@WebServlet(name = "GestionarPeliculas", urlPatterns = { "/GestionarPeliculas" })
 public class GestionarPeliculas extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -35,67 +35,72 @@ public class GestionarPeliculas extends HttpServlet {
 		}
 
 		switch (action) {
-		case "listar":
-			listar(request, response);
-			break;
-		case "eliminar":
-			eliminar(request, response);
-			break;
-		case "confirmar":
-			confirmar(request, response);
-			break;
-		case "publicar":
-			publicar(request, response);
-			break;
-		case "llenar":
-			llenar(request, response);
-			break;
-		case "editar":
-			editar(request, response);
-			break;
-		case "cambiar":
-			cambiar(request, response);
-			break;
-		default:
-			// acción desconocida -> listar
-			listar(request, response);
+			case "listar":
+				listar(request, response);
+				break;
+			case "eliminar":
+				eliminar(request, response);
+				break;
+			case "confirmar":
+				confirmar(request, response);
+				break;
+			case "publicar":
+				publicar(request, response);
+				break;
+			case "llenar":
+				llenar(request, response);
+				break;
+			case "editar":
+				editar(request, response);
+				break;
+			case "cambiar":
+				cambiar(request, response);
+				break;
+			default:
+				// acción desconocida -> listar
+				listar(request, response);
 		}
 	}
 
-	// Métodos solicitados: listar, eliminar, confirmar, publicar, llenar, editar, cambiar
+	// Métodos solicitados: listar, eliminar, confirmar, publicar, llenar, editar,
+	// cambiar
 
 	protected void listar(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		PeliculaDAO peliculaDAO = new PeliculaDAO();
 		List<Pelicula> peliculas = peliculaDAO.obtenerTodas();
-		
-		//llamada a la JSP
+
+		// llamada a la JSP
 		request.setAttribute("peliculas", peliculas);
 		request.getRequestDispatcher("vistas/AdministrarPeliculas.jsp").forward(request, response);
-		
+
 	}
 
 	protected void eliminar(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		Integer idPelicula = Integer.parseInt(request.getParameter("idPelicula"));
-		
-		request.setAttribute("idPelicula", idPelicula);
-		request.getRequestDispatcher("/vistas/EliminarPelicula.jsp").forward(request, response);
+
+		// Eliminar la película usando el DAO
+		PeliculaDAO peliculaDAO = new PeliculaDAO();
+		peliculaDAO.eliminarPelicula(idPelicula);
+
+		// Redirigir a la lista de películas actualizada
+		response.sendRedirect(request.getContextPath() + "/GestionarPeliculas?action=listar");
 	}
 
 	protected void confirmar(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		Integer idPelicula= Integer.parseInt(request.getParameter("idPelicula"));
+		Integer idPelicula = Integer.parseInt(request.getParameter("idPelicula"));
 		boolean decision = Boolean.parseBoolean(request.getParameter("decision"));
-		String accion= request.getParameter("accion");
-		
+		String accion = request.getParameter("accion");
+
 		if (decision) {
 			PeliculaDAO peliculaDAO = new PeliculaDAO();
 			if (accion.equals("eliminar")) {
 				peliculaDAO.eliminarPelicula(idPelicula);
 			}
 		}
-		
+
 		response.sendRedirect(request.getContextPath() + "/GestionarPeliculas?action=listar");
 	}
 
@@ -107,14 +112,14 @@ public class GestionarPeliculas extends HttpServlet {
 
 	protected void llenar(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		//Info a rellenar en el form de publicacion
-		String titulo= request.getParameter("titulo");
-		String poster= request.getParameter("poster");
-		String sinopsis= request.getParameter("sinopsis");
-		String director= request.getParameter("director");
-		Integer duracion= Integer.parseInt(request.getParameter("duracion"));
-		String urlTrailer= request.getParameter("urlTrailer");
-		
+		// Info a rellenar en el form de publicacion
+		String titulo = request.getParameter("titulo");
+		String poster = request.getParameter("poster");
+		String sinopsis = request.getParameter("sinopsis");
+		String director = request.getParameter("director");
+		Integer duracion = Integer.parseInt(request.getParameter("duracion"));
+		String urlTrailer = request.getParameter("urlTrailer");
+
 		Pelicula pelicula = new Pelicula();
 		pelicula.setTitulo(titulo);
 		pelicula.setPoster(poster);
@@ -122,10 +127,10 @@ public class GestionarPeliculas extends HttpServlet {
 		pelicula.setDirector(director);
 		pelicula.setDuracion(duracion);
 		pelicula.setTrailer(urlTrailer);
-		
+
 		PeliculaDAO peliculaDAO = new PeliculaDAO();
-		peliculaDAO.registrarPelicula(pelicula); 
-		
+		peliculaDAO.registrarPelicula(pelicula);
+
 		response.sendRedirect(request.getContextPath() + "/GestionarPeliculas?action=listar");
 	}
 
@@ -133,23 +138,22 @@ public class GestionarPeliculas extends HttpServlet {
 			throws ServletException, IOException {
 		Integer idPelicula = Integer.parseInt(request.getParameter("idPelicula"));
 		PeliculaDAO peliculaDAO = new PeliculaDAO();
-		Pelicula pelicula= peliculaDAO.obtenerDatosPelicula(idPelicula);
-		
+		Pelicula pelicula = peliculaDAO.obtenerDatosPelicula(idPelicula);
+
 		request.setAttribute("pelicula", pelicula);
 		request.getRequestDispatcher("/vistas/EditarPelicula.jsp").forward(request, response);
-		
 	}
 
 	protected void cambiar(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		Integer idPelicula = Integer.parseInt(request.getParameter("idPelicula"));
-		String titulo= request.getParameter("titulo");
-		String poster= request.getParameter("poster");
-		String sinopsis= request.getParameter("sinopsis");
-		String director= request.getParameter("director");
-		String duracionStr= request.getParameter("duracion");
-		String urlTrailer= request.getParameter("urlTrailer");
-		
+		String titulo = request.getParameter("titulo");
+		String poster = request.getParameter("poster");
+		String sinopsis = request.getParameter("sinopsis");
+		String director = request.getParameter("director");
+		String duracionStr = request.getParameter("duracion");
+		String urlTrailer = request.getParameter("urlTrailer");
+
 		Pelicula pelicula = new Pelicula();
 		pelicula.setId(idPelicula);
 		pelicula.setTitulo(titulo);
@@ -158,9 +162,9 @@ public class GestionarPeliculas extends HttpServlet {
 		pelicula.setDirector(director);
 		pelicula.setDuracion(Integer.parseInt(duracionStr));
 		pelicula.setTrailer(urlTrailer);
-		
+
 		PeliculaDAO peliculaDAO = new PeliculaDAO();
 		peliculaDAO.actualizar(pelicula);
 		response.sendRedirect(request.getContextPath() + "/GestionarPeliculas?action=listar");
-		}
 	}
+}

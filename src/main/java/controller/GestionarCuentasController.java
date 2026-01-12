@@ -19,62 +19,66 @@ import model.entitys.Usuario;
 /**
  * Servlet implementation class GestionarCuentasController
  */
-@WebServlet(name = "GestionarCuentasController", urlPatterns = {"/GestionarCuentasController", "/cuentas"})
+@WebServlet(name = "GestionarCuentasController", urlPatterns = { "/GestionarCuentasController", "/cuentas" })
 public class GestionarCuentasController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    public GestionarCuentasController() {
-        
-    }
+
+	public GestionarCuentasController() {
+
+	}
 
 	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		processRequest(request, response);
 	}
 
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		processRequest(request, response);
 	}
-	
-	private void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+	private void processRequest(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		String action = request.getParameter("action");
 		if (action == null || action.isEmpty()) {
 			action = "listar";
 		}
-		
+
 		switch (action) {
-		case "listar":
-			listar(request, response);
-			break;
-		case "cambiar":
-			cambiarRol(request, response);
-			break;
-		case "guardar":
-			guardarRol(request, response);
-			break;
-		case "eliminar":
-			eliminarCuenta(request, response);
-			break;
-		case "confirmar":
-			confirmarAccion(request, response);
-			break;
-		case "desactivar":
-			desactivarCuenta(request, response);
-			break;
-		case "activar":
-			activarCuenta(request, response);
-			break;
-		default:
-			listar(request, response);
-			break;
+			case "listar":
+				listar(request, response);
+				break;
+			case "cambiar":
+				cambiarRol(request, response);
+				break;
+			case "guardar":
+				guardarRol(request, response);
+				break;
+			case "eliminar":
+				eliminarCuenta(request, response);
+				break;
+			case "confirmar":
+				confirmarAccion(request, response);
+				break;
+			case "desactivar":
+				desactivarCuenta(request, response);
+				break;
+			case "activar":
+				activarCuenta(request, response);
+				break;
+			default:
+				listar(request, response);
+				break;
 		}
 	}
 
-	protected void listar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void listar(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		CuentaDAO dao = new CuentaDAO();
 		List<Cuenta> listaCuentas = dao.obtenerTodas();
-		
+
 		// Convertir a formato que la JSP puede mostrar
 		List<Map<String, Object>> lista = new ArrayList<>();
 		for (Cuenta cuenta : listaCuentas) {
@@ -82,7 +86,7 @@ public class GestionarCuentasController extends HttpServlet {
 			fila.put("id", cuenta.getId());
 			fila.put("nombre", cuenta.getNombre());
 			fila.put("correo", cuenta.getCorreo());
-			
+
 			// Determinar el rol según el tipo de clase
 			if (cuenta instanceof Administrador) {
 				fila.put("rol", "Administrador");
@@ -96,83 +100,97 @@ public class GestionarCuentasController extends HttpServlet {
 				fila.put("rol", "Desconocido");
 				fila.put("estadoTexto", "N/A");
 			}
-			
+
 			lista.add(fila);
 		}
-		
+
 		request.setAttribute("lista", lista);
 		request.setAttribute("editarUrl", "GestionarCuentasController");
 		request.setAttribute("eliminarUrl", "GestionarCuentasController");
 		request.setAttribute("toggleUrl", "GestionarCuentasController");
-		
+
 		request.getRequestDispatcher("vistas/AdministrarCuentas.jsp").forward(request, response);
 	}
-	
-	protected void cambiarRol(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+	protected void cambiarRol(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		Integer idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
-		
+
 		CuentaDAO dao = new CuentaDAO();
 		Cuenta cuenta = dao.obtenerPorId(idUsuario);
-		
+
 		// Determinar el rol actual
 		boolean esAdmin = cuenta instanceof Administrador;
-		
+
 		request.setAttribute("cuenta", cuenta);
 		request.setAttribute("esAdmin", esAdmin);
 		request.getRequestDispatcher("/vistas/CambiarRol.jsp").forward(request, response);
 	}
-	
-	protected void guardarRol(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+	protected void guardarRol(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		Integer idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
 		Integer idRol = Integer.parseInt(request.getParameter("idRol"));
-		
+
 		CuentaDAO dao = new CuentaDAO();
 		dao.actualizarRol(idUsuario, idRol);
-		
+
 		response.sendRedirect(request.getContextPath() + "/GestionarCuentasController?action=listar");
 	}
-	
-	protected void eliminarCuenta(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+	protected void eliminarCuenta(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		Integer idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
-		
-		request.setAttribute("idUsuario", idUsuario);
-		request.getRequestDispatcher("/vistas/EliminarCuenta.jsp").forward(request, response);
-	}	
-	
-	protected void desactivarCuenta(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Integer idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
-		
-		request.setAttribute("idUsuario", idUsuario);
-		request.getRequestDispatcher("/vistas/DesactivarCuenta.jsp").forward(request, response);
+
+		// Eliminar la cuenta usando el DAO
+		CuentaDAO dao = new CuentaDAO();
+		dao.eliminarCuenta(idUsuario);
+
+		// Redirigir a la lista de cuentas actualizada
+		response.sendRedirect(request.getContextPath() + "/GestionarCuentasController?action=listar");
 	}
-	
-	protected void activarCuenta(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+	protected void desactivarCuenta(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		Integer idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
-		
+
+		// Desactivar la cuenta usando el DAO
+		CuentaDAO dao = new CuentaDAO();
+		dao.desactivarCuenta(idUsuario);
+
+		// Redirigir a la lista de cuentas actualizada
+		response.sendRedirect(request.getContextPath() + "/GestionarCuentasController?action=listar");
+	}
+
+	protected void activarCuenta(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		Integer idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
+
 		CuentaDAO dao = new CuentaDAO();
 		dao.activarCuenta(idUsuario);
-		
+
 		response.sendRedirect(request.getContextPath() + "/GestionarCuentasController?action=listar");
 	}
-	
-	protected void confirmarAccion(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+	protected void confirmarAccion(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		boolean decision = Boolean.parseBoolean(request.getParameter("decision"));
 		String accion = request.getParameter("accion");
 		Integer idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
-		
+
 		if (decision) {
 			CuentaDAO dao = new CuentaDAO();
-			
+
 			switch (accion) {
-			case "eliminar":
-				dao.eliminarCuenta(idUsuario);
-				break;
-			case "desactivar":
-				dao.desactivarCuenta(idUsuario);
-				break;
+				case "eliminar":
+					dao.eliminarCuenta(idUsuario);
+					break;
+				case "desactivar":
+					dao.desactivarCuenta(idUsuario);
+					break;
 			}
 		}
-		
+
 		response.sendRedirect(request.getContextPath() + "/GestionarCuentasController?action=listar");
 	}
 }

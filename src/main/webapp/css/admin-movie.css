@@ -48,9 +48,9 @@ section {
 }
 
 .volver {
-        gap: 800px;
+    gap: 800px;
 }
-    
+
 .buscador-admin .buscador-input {
     flex: 1;
     background: var(--color-buscar);
@@ -81,10 +81,6 @@ section {
     align-items: flex-start;
     margin-top: 20px;
     margin-bottom: 50px;
-    margin-left: 0; /* removed large left margin to allow centering */
-    justify-content: center; /* center children horizontally */
-    max-width: 1200px;
-    margin: 20px auto 50px;
 }
 
 .gap-admin {
@@ -100,10 +96,12 @@ section {
     background: #C4C4C4;
     border-radius: 15px;
     padding: 20px;
-    height: 448px;
+    min-height: 200px;
+    max-height: 550px;
+    overflow-y: auto;
     width: 895px;
-    margin-left: 0; /* center instead of left-align */
-    margin: 20px auto 70px;
+    margin-left: 97px;
+    margin-bottom: 70px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -224,16 +222,16 @@ section {
 .form-edit-container {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 0 40px; /* reduced side padding */
+    padding: 0 97px;
     margin-bottom: 50px;
 }
 
 .movie-form {
     display: flex;
-    gap: 40px; /* reduced gap */
+    gap: 60px;
     align-items: flex-start;
-    margin-left: 0; /* remove large left offset */
-    justify-content: center; /* center form columns */
+    margin-left: 200px;
+
 }
 
 .form-left {
@@ -374,9 +372,10 @@ section {
 
 .form-actions {
     display: flex;
-    justify-content: flex-end; /* align actions to the right */
+    justify-content: center;
+    gap: 30px;
     margin-left: 0;
-    padding-right: 40px;
+    margin-top: 20px;
 }
 
 .btn-form {
@@ -438,7 +437,7 @@ section {
 }
 
 /* Reduce espacio del footer solo en la página de búsqueda */
-.search-section-new ~ #footer .text-footer {
+.search-section-new~#footer .text-footer {
     margin-top: 10px;
 }
 
