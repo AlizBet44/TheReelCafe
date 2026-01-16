@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.dao.CuentaDAO;
+import model.dao.DAOFactory;
 import model.entitys.Administrador;
 import model.entitys.Cuenta;
 import model.entitys.Usuario;
@@ -76,7 +77,9 @@ public class GestionarCuentasController extends HttpServlet {
 
 	protected void listar(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		CuentaDAO dao = new CuentaDAO();
+		// Usar el Factory Pattern para obtener el DAO
+		DAOFactory factory = DAOFactory.getDAOFactory();
+		CuentaDAO dao = factory.getCuentaDAO();
 		List<Cuenta> listaCuentas = dao.obtenerTodas();
 
 		// Convertir a formato que la JSP puede mostrar
@@ -116,7 +119,9 @@ public class GestionarCuentasController extends HttpServlet {
 			throws ServletException, IOException {
 		Integer idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
 
-		CuentaDAO dao = new CuentaDAO();
+		// Usar el Factory Pattern para obtener el DAO
+		DAOFactory factory = DAOFactory.getDAOFactory();
+		CuentaDAO dao = factory.getCuentaDAO();
 		Cuenta cuenta = dao.obtenerPorId(idUsuario);
 
 		// Determinar el rol actual
@@ -132,7 +137,9 @@ public class GestionarCuentasController extends HttpServlet {
 		Integer idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
 		Integer idRol = Integer.parseInt(request.getParameter("idRol"));
 
-		CuentaDAO dao = new CuentaDAO();
+		// Usar el Factory Pattern para obtener el DAO
+		DAOFactory factory = DAOFactory.getDAOFactory();
+		CuentaDAO dao = factory.getCuentaDAO();
 		dao.actualizarRol(idUsuario, idRol);
 
 		response.sendRedirect(request.getContextPath() + "/GestionarCuentasController?action=listar");
@@ -142,8 +149,9 @@ public class GestionarCuentasController extends HttpServlet {
 			throws ServletException, IOException {
 		Integer idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
 
-		// Eliminar la cuenta usando el DAO
-		CuentaDAO dao = new CuentaDAO();
+		// Usar el Factory Pattern para obtener el DAO
+		DAOFactory factory = DAOFactory.getDAOFactory();
+		CuentaDAO dao = factory.getCuentaDAO();
 		dao.eliminarCuenta(idUsuario);
 
 		// Redirigir a la lista de cuentas actualizada
@@ -154,8 +162,9 @@ public class GestionarCuentasController extends HttpServlet {
 			throws ServletException, IOException {
 		Integer idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
 
-		// Desactivar la cuenta usando el DAO
-		CuentaDAO dao = new CuentaDAO();
+		// Usar el Factory Pattern para obtener el DAO
+		DAOFactory factory = DAOFactory.getDAOFactory();
+		CuentaDAO dao = factory.getCuentaDAO();
 		dao.desactivarCuenta(idUsuario);
 
 		// Redirigir a la lista de cuentas actualizada
@@ -166,7 +175,9 @@ public class GestionarCuentasController extends HttpServlet {
 			throws ServletException, IOException {
 		Integer idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
 
-		CuentaDAO dao = new CuentaDAO();
+		// Usar el Factory Pattern para obtener el DAO
+		DAOFactory factory = DAOFactory.getDAOFactory();
+		CuentaDAO dao = factory.getCuentaDAO();
 		dao.activarCuenta(idUsuario);
 
 		response.sendRedirect(request.getContextPath() + "/GestionarCuentasController?action=listar");
@@ -179,7 +190,9 @@ public class GestionarCuentasController extends HttpServlet {
 		Integer idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
 
 		if (decision) {
-			CuentaDAO dao = new CuentaDAO();
+			// Usar el Factory Pattern para obtener el DAO
+			DAOFactory factory = DAOFactory.getDAOFactory();
+			CuentaDAO dao = factory.getCuentaDAO();
 
 			switch (accion) {
 				case "eliminar":

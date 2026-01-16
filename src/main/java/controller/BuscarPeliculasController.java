@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.entitys.Pelicula;
 import model.dao.PeliculaDAO;
+import model.dao.DAOFactory;
 
 /**
  * Servlet implementation class BuscarPeliculasController
@@ -65,14 +66,23 @@ public class BuscarPeliculasController extends HttpServlet {
 	 */
 	protected void ingresarTexto(String criterio, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
-			PeliculaDAO peliculaDAO = new PeliculaDAO();
-			List<Pelicula> peliculasEncontradas = peliculaDAO.obtenerPelicula(criterio);
+			// Usar el Factory Pattern para obtener el DAO
+			DAOFactory factory = DAOFactory.getDAOFactory();
+			PeliculaDAO peliculaDAO = factory.getPeliculaDAO();
+			List<Pelicula> peliculasEncontradas = peliculaDAO.obtenerTodas();
 			
-			if (peliculasEncontradas != null && !peliculasEncontradas.isEmpty()) {
+			// Filtrar resultados localmente según el criterio
+			List<Pelicula> resultadosFiltrados = peliculasEncontradas.stream()
+				.filter(p -> p.getTitulo().toLowerCase().contains(criterio.toLowerCase()) ||
+						p.getDirector().toLowerCase().contains(criterio.toLowerCase()) ||
+						p.getSinopsis().toLowerCase().contains(criterio.toLowerCase()))
+				.toList();
+			
+			if (resultadosFiltrados != null && !resultadosFiltrados.isEmpty()) {
 				// Hay resultados
-				request.setAttribute("peliculas", peliculasEncontradas);
+				request.setAttribute("peliculas", resultadosFiltrados);
 				request.setAttribute("criterio", criterio);
-				request.setAttribute("cantidadResultados", peliculasEncontradas.size());
+				request.setAttribute("cantidadResultados", resultadosFiltrados.size());
 				request.getRequestDispatcher("/vistas/ResultadosBusqueda.jsp").forward(request, response);
 			} else {
 				// No hay resultados
@@ -81,7 +91,6 @@ public class BuscarPeliculasController extends HttpServlet {
 				request.getRequestDispatcher("/vistas/NoResultadosBusqueda.jsp").forward(request, response);
 			}
 			
-			peliculaDAO.cerrar();
 		} catch (Exception e) {
 			System.out.println(">>>> ERROR en búsqueda de películas: " + e.getMessage());
 			e.printStackTrace();

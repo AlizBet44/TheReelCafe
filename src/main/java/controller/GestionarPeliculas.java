@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.dao.PeliculaDAO;
+import model.dao.DAOFactory;
 import model.entitys.Pelicula;
 
 @WebServlet(name = "GestionarPeliculas", urlPatterns = { "/GestionarPeliculas" })
@@ -67,7 +68,9 @@ public class GestionarPeliculas extends HttpServlet {
 
 	protected void listar(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		PeliculaDAO peliculaDAO = new PeliculaDAO();
+		// Usar el Factory Pattern para obtener el DAO
+		DAOFactory factory = DAOFactory.getDAOFactory();
+		PeliculaDAO peliculaDAO = factory.getPeliculaDAO();
 		List<Pelicula> peliculas = peliculaDAO.obtenerTodas();
 
 		// llamada a la JSP
@@ -81,8 +84,9 @@ public class GestionarPeliculas extends HttpServlet {
 		Integer idPelicula = Integer.parseInt(request.getParameter("idPelicula"));
 
 		// Eliminar la película usando el DAO
-		PeliculaDAO peliculaDAO = new PeliculaDAO();
-		peliculaDAO.eliminarPelicula(idPelicula);
+		DAOFactory factory = DAOFactory.getDAOFactory();
+		PeliculaDAO peliculaDAO = factory.getPeliculaDAO();
+		peliculaDAO.eliminar(idPelicula);
 
 		// Redirigir a la lista de películas actualizada
 		response.sendRedirect(request.getContextPath() + "/GestionarPeliculas?action=listar");
@@ -95,9 +99,10 @@ public class GestionarPeliculas extends HttpServlet {
 		String accion = request.getParameter("accion");
 
 		if (decision) {
-			PeliculaDAO peliculaDAO = new PeliculaDAO();
+			DAOFactory factory = DAOFactory.getDAOFactory();
+			PeliculaDAO peliculaDAO = factory.getPeliculaDAO();
 			if (accion.equals("eliminar")) {
-				peliculaDAO.eliminarPelicula(idPelicula);
+				peliculaDAO.eliminar(idPelicula);
 			}
 		}
 
@@ -128,8 +133,10 @@ public class GestionarPeliculas extends HttpServlet {
 		pelicula.setDuracion(duracion);
 		pelicula.setTrailer(urlTrailer);
 
-		PeliculaDAO peliculaDAO = new PeliculaDAO();
-		peliculaDAO.registrarPelicula(pelicula);
+		// Usar el Factory Pattern para obtener el DAO
+		DAOFactory factory = DAOFactory.getDAOFactory();
+		PeliculaDAO peliculaDAO = factory.getPeliculaDAO();
+		peliculaDAO.registrar(pelicula);
 
 		response.sendRedirect(request.getContextPath() + "/GestionarPeliculas?action=listar");
 	}
@@ -137,8 +144,10 @@ public class GestionarPeliculas extends HttpServlet {
 	protected void editar(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		Integer idPelicula = Integer.parseInt(request.getParameter("idPelicula"));
-		PeliculaDAO peliculaDAO = new PeliculaDAO();
-		Pelicula pelicula = peliculaDAO.obtenerDatosPelicula(idPelicula);
+		// Usar el Factory Pattern para obtener el DAO
+		DAOFactory factory = DAOFactory.getDAOFactory();
+		PeliculaDAO peliculaDAO = factory.getPeliculaDAO();
+		Pelicula pelicula = peliculaDAO.obtenerPorId(idPelicula);
 
 		request.setAttribute("pelicula", pelicula);
 		request.getRequestDispatcher("/vistas/EditarPelicula.jsp").forward(request, response);
@@ -163,7 +172,9 @@ public class GestionarPeliculas extends HttpServlet {
 		pelicula.setDuracion(Integer.parseInt(duracionStr));
 		pelicula.setTrailer(urlTrailer);
 
-		PeliculaDAO peliculaDAO = new PeliculaDAO();
+		// Usar el Factory Pattern para obtener el DAO
+		DAOFactory factory = DAOFactory.getDAOFactory();
+		PeliculaDAO peliculaDAO = factory.getPeliculaDAO();
 		peliculaDAO.actualizar(pelicula);
 		response.sendRedirect(request.getContextPath() + "/GestionarPeliculas?action=listar");
 	}
