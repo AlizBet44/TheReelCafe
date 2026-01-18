@@ -7,13 +7,14 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import model.dao.PeliculaDAO;
 import model.entitys.Pelicula;
+import model.jpa.JPAPelicula;
 
 /**
  * Servlet implementation class visualizarPeliculaController
  */
-@WebServlet(name = "visualizarPeliculaController", urlPatterns = { "/visualizarPeliculaController", "/pelicula/detalle" })
+@WebServlet(name = "visualizarPeliculaController", urlPatterns = { "/visualizarPeliculaController",
+		"/pelicula/detalle" })
 public class visualizarPeliculaController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -41,12 +42,12 @@ public class visualizarPeliculaController extends HttpServlet {
 		}
 
 		switch (action) {
-		case "ampliarPelicula":
-			ampliarPelicula(request, response);
-			break;
-		default:
-			ampliarPelicula(request, response);
-			break;
+			case "ampliarPelicula":
+				ampliarPelicula(request, response);
+				break;
+			default:
+				ampliarPelicula(request, response);
+				break;
 		}
 	}
 
@@ -63,8 +64,8 @@ public class visualizarPeliculaController extends HttpServlet {
 
 			Integer idPelicula = Integer.parseInt(idPeliculaStr);
 
-			PeliculaDAO peliculaDAO = new PeliculaDAO();
-			Pelicula pelicula = peliculaDAO.obtenerDatosPelicula(idPelicula);
+			JPAPelicula peliculaDAO = new JPAPelicula();
+			Pelicula pelicula = peliculaDAO.obtenerPorId(idPelicula);
 
 			if (pelicula != null) {
 				request.setAttribute("pelicula", pelicula);

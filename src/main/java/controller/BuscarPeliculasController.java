@@ -10,48 +10,52 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.entitys.Pelicula;
 import model.dao.PeliculaDAO;
+import model.dao.DAOFactory;
 
 /**
  * Servlet implementation class BuscarPeliculasController
  */
-@WebServlet(name = "BuscarPeliculasController", urlPatterns = {"/BuscarPeliculasController", "/peliculas/buscar"})
+@WebServlet(name = "BuscarPeliculasController", urlPatterns = { "/BuscarPeliculasController", "/peliculas/buscar" })
 public class BuscarPeliculasController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    public BuscarPeliculasController() {
-        
-    }
+
+	public BuscarPeliculasController() {
+
+	}
 
 	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		processRequest(request, response);
 	}
 
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		processRequest(request, response);
 	}
-	
-	private void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+	private void processRequest(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		String action = request.getParameter("action");
 		if (action == null || action.isEmpty()) {
 			action = "buscar";
 		}
-		
+
 		switch (action) {
-		case "buscar":
-			String criterio = request.getParameter("criterio");
-			if (criterio != null && !criterio.isEmpty()) {
-				ingresarTexto(criterio, request, response);
-			} else {
-				request.setAttribute("mensajeError", "Por favor, ingrese un criterio de búsqueda");
+			case "buscar":
+				String criterio = request.getParameter("criterio");
+				if (criterio != null && !criterio.isEmpty()) {
+					ingresarTexto(criterio, request, response);
+				} else {
+					// Si no hay criterio, mostrar todas las películas
+					mostrarTodas(request, response);
+				}
+				break;
+			default:
+				request.setAttribute("mensajeError", "Acción no válida");
 				request.getRequestDispatcher("/vistas/NoResultadosBusqueda.jsp").forward(request, response);
-			}
-			break;
-		default:
-			request.setAttribute("mensajeError", "Acción no válida");
-			request.getRequestDispatcher("/vistas/NoResultadosBusqueda.jsp").forward(request, response);
-			break;
+				break;
 		}
 	}
 
@@ -60,28 +64,38 @@ public class BuscarPeliculasController extends HttpServlet {
 	 * Busca en los campos: título, director y sinopsis.
 	 * 
 	 * @param criterio El texto a buscar en las películas
-	 * @param request El objeto HttpServletRequest
+	 * @param request  El objeto HttpServletRequest
 	 * @param response El objeto HttpServletResponse
 	 */
-	protected void ingresarTexto(String criterio, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void ingresarTexto(String criterio, HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		try {
-			PeliculaDAO peliculaDAO = new PeliculaDAO();
-			List<Pelicula> peliculasEncontradas = peliculaDAO.obtenerPelicula(criterio);
-			
-			if (peliculasEncontradas != null && !peliculasEncontradas.isEmpty()) {
+			// Usar el Factory Pattern para obtener el DAO
+			DAOFactory factory = DAOFactory.getDAOFactory();
+			PeliculaDAO peliculaDAO = factory.getPeliculaDAO();
+			List<Pelicula> peliculasEncontradas = peliculaDAO.obtenerTodas();
+
+			// Filtrar resultados localmente según el criterio
+			List<Pelicula> resultadosFiltrados = peliculasEncontradas.stream()
+					.filter(p -> p.getTitulo().toLowerCase().contains(criterio.toLowerCase()) ||
+							p.getDirector().toLowerCase().contains(criterio.toLowerCase()) ||
+							p.getSinopsis().toLowerCase().contains(criterio.toLowerCase()))
+					.toList();
+
+			if (resultadosFiltrados != null && !resultadosFiltrados.isEmpty()) {
 				// Hay resultados
-				request.setAttribute("peliculas", peliculasEncontradas);
+				request.setAttribute("peliculas", resultadosFiltrados);
 				request.setAttribute("criterio", criterio);
-				request.setAttribute("cantidadResultados", peliculasEncontradas.size());
+				request.setAttribute("cantidadResultados", resultadosFiltrados.size());
 				request.getRequestDispatcher("/vistas/ResultadosBusqueda.jsp").forward(request, response);
 			} else {
 				// No hay resultados
 				request.setAttribute("criterio", criterio);
-				request.setAttribute("mensajeError", "No se encontraron películas que coincidan con el criterio: \"" + criterio + "\"");
+				request.setAttribute("mensajeError",
+						"No se encontraron películas que coincidan con el criterio: \"" + criterio + "\"");
 				request.getRequestDispatcher("/vistas/NoResultadosBusqueda.jsp").forward(request, response);
 			}
-			
-			peliculaDAO.cerrar();
+
 		} catch (Exception e) {
 			System.out.println(">>>> ERROR en búsqueda de películas: " + e.getMessage());
 			e.printStackTrace();
@@ -90,5 +104,27 @@ public class BuscarPeliculasController extends HttpServlet {
 		}
 	}
 
-	
+	/**
+	 * Método para mostrar todas las películas cuando no hay criterio de búsqueda.
+	 */
+	protected void mostrarTodas(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		try {
+			DAOFactory factory = DAOFactory.getDAOFactory();
+			PeliculaDAO peliculaDAO = factory.getPeliculaDAO();
+			List<Pelicula> todasLasPeliculas = peliculaDAO.obtenerTodas();
+
+			request.setAttribute("peliculas", todasLasPeliculas);
+			request.setAttribute("criterio", "Todas las películas");
+			request.setAttribute("cantidadResultados", todasLasPeliculas.size());
+			request.getRequestDispatcher("/vistas/ResultadosBusqueda.jsp").forward(request, response);
+
+		} catch (Exception e) {
+			System.out.println(">>>> ERROR al mostrar todas las películas: " + e.getMessage());
+			e.printStackTrace();
+			request.setAttribute("mensajeError", "Error al cargar las películas: " + e.getMessage());
+			request.getRequestDispatcher("/vistas/NoResultadosBusqueda.jsp").forward(request, response);
+		}
+	}
+
 }

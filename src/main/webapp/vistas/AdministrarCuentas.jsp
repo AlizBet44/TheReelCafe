@@ -209,8 +209,10 @@
 
                 <ul class="d-flex list-none-style gap">
                     <li>
-                        <img class="user-icon rounded"
-                            src="${pageContext.request.contextPath}/recursos/icons/user-default.png">
+                        <a href="${pageContext.request.contextPath}/BuscarPeliculasController?action=buscar&criterio=">
+                            <img class="user-icon rounded"
+                                src="${pageContext.request.contextPath}/recursos/icons/user-default.png">
+                        </a>
                     </li>
                     <li><button class="btn-usuario">USUARIO</button></li>
                     <li>
