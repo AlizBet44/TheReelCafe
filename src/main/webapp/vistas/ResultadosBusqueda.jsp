@@ -291,7 +291,7 @@
                             <c:if test="${not empty pelicula.trailer}">
                                 <a href="${pelicula.trailer}" target="_blank" class="btn-view">Ver Tráiler</a>
                             </c:if>
-                            <a href="${pageContext.request.contextPath}/index.jsp?peliculaId=${pelicula.id}" class="btn-view">Ver Detalle</a>
+                            <a href="${pageContext.request.contextPath}/visualizarPeliculaController?action=ampliarPelicula&idPelicula=${pelicula.id}" class="btn-view">Ver Detalle</a>
                         </div>
                     </div>
                 </div>
