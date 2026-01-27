@@ -6,9 +6,12 @@ import java.util.Objects;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -44,6 +47,10 @@ public class Pelicula implements Serializable {
     @Temporal(TemporalType.DATE)
     @Column(name = "fecha_estreno")
     private Date fechaEstreno;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "creado_por_id")
+    private Administrador administrador;
 
     public Pelicula() {
     }
@@ -121,6 +128,14 @@ public class Pelicula implements Serializable {
 
     public void setFechaEstreno(Date fechaEstreno) {
         this.fechaEstreno = fechaEstreno;
+    }
+
+    public Administrador getAdministrador() {
+        return administrador;
+    }
+
+    public void setAdministrador(Administrador administrador) {
+        this.administrador = administrador;
     }
 
 	@Override

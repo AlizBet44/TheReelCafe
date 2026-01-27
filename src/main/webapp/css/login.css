@@ -1,0 +1,110 @@
+/* ===== ESTILOS DEL LOGIN ===== */
+
+.flex-colum {
+    flex-direction: column;
+}
+
+.padding-login {
+    padding-left: 130px;
+}
+
+.container-text {
+    width: 40%;
+    padding: 20px;
+    font-family: var(--fuente-familia);
+}
+
+.imagen-login {
+    width: 820px;
+    height: 410px;
+    margin: 0 200px;
+}
+
+.tamaño {
+    font-size: 20px;
+}
+
+.margin-login {
+    margin: 20px;
+}
+
+.margin-login-right {
+    margin-right: 100px;
+}
+
+.back-arrow {
+    font-size: 25px;
+    color: var(--color-negro);
+    font-weight: bold;
+    padding-right: 40px;
+    text-decoration: none;
+    font-family: var(--fuente-familia);
+}
+
+.container-text input {
+    width: 100%;
+    padding: 20px;
+    border: none;
+    background: #e7e7e7;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 26px;
+}
+
+.container-text .parrafo {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 26px;
+}
+
+.container-text .link {
+    text-align: center;
+    font-size: 26px;
+    color: #000;
+    font-weight: 900;
+    text-decoration: underline;
+}
+
+.container-text label {
+    font-weight: 900;
+    margin-bottom: 6px;
+    display: block;
+    font-size: 28px;
+}
+
+.global-container {
+    margin: auto;
+    padding: auto;
+}
+
+.separacion-login {
+    margin-left: 50px;
+}
+
+.form-login {
+    width: 100%;
+}
+
+/* ===== MENSAJE DE ERROR ===== */
+.error-message {
+    background: #ffcccc;
+    color: #cc0000;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* ===== MENSAJE DE ÉXITO ===== */
+.success-message {
+    background: #ccffcc;
+    color: #006600;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+}
